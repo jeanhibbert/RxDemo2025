@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="8.1.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="8.1.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="8.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\RxDemoApp.Domain\RxDemoApp.Server.Domain.csproj" />
+    <ProjectReference Include="..\..\RxDemo.Common\RxDemo.Common.csproj" />
+    <ProjectReference Include="..\RxDemoApp.ServiceDefaults\RxDemoApp.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+</Project>
