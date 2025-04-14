@@ -3,7 +3,11 @@ using RxDemo.ConsoleApp;
 
 //EventHandlersVsObservableStreams.Sample1();
 
-SubjectSamples.BasicSubject();
+//SubjectSamples.BasicSubject();
+var pipeline = new PipelineSample();
+pipeline.RunReactivePipeline();
+pipeline.Connect();
+
 
 Console.ReadLine();
 
