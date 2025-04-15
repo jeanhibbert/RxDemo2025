@@ -70,7 +70,7 @@ app.MapDelete("/api/unregisterstrategy/{id}", (string id) =>
         return Results.NotFound();
 });
 
-var priceFeed = app.Services.GetRequiredService<IPriceFeed>();
+var priceFeed = app.Services.GetRequiredService<IFeedGenerator>();
 priceFeed.Start();
 
 app.MapDefaultEndpoints();

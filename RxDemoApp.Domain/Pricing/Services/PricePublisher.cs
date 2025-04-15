@@ -21,7 +21,7 @@ public class PricePublisher(IContextHolder contextHolder,
         if (context == null) return;
 
         _totalUpdatesPublished++;
-        var groupName = string.Format(PricingHub.PriceStreamGroupPattern, price.Symbol);
+        var groupName = string.Format(PricingHub.PriceStreamGroupPattern, price.Symbol, price.CounterParty);
         try
         {
             await context.Group(groupName).SendAsync("OnNewPrice", price);

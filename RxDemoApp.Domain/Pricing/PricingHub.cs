@@ -7,12 +7,12 @@ using System.Diagnostics;
 
 public class PricingHub(
         IPriceLastValueCache priceLastValueCache,
-        ICurrencyPairRepository currencyPairRepository,
+        ICurrencyPairHolder currencyPairRepository,
         IContextHolder contextHolder,
         ILogger<PricingHub> logger) : Microsoft.AspNetCore.SignalR.Hub
 {
 
-    public const string PriceStreamGroupPattern = "Pricing/{0}";
+    public const string PriceStreamGroupPattern = "Pricing/{0}.{1}";
         
     public override async Task OnConnectedAsync()
     {
@@ -26,22 +26,17 @@ public class PricingHub(
 
         logger.LogInformation("Received subscription request {0} from connection {1}", request, Context.ConnectionId);
 
-        if (!currencyPairRepository.Exists(request.CurrencyPair))
+        if (!currencyPairRepository.Exists(request.CurrencyPair, request.CounterParty))
         {
             Debug.WriteLine("Received a subscription request for an invalid currency pair '{0}', it was ignored.", request.CurrencyPair);
             return;
         }
 
-        if (request.CurrencyPair == "EURCHF")
-        {
-            await Task.Delay(TimeSpan.FromSeconds(2));
-        }
-
-        var groupName = string.Format(PriceStreamGroupPattern, request.CurrencyPair);
+        var groupName = string.Format(PriceStreamGroupPattern, request.CurrencyPair, request.CounterParty);
         await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
         logger.LogInformation("Connection {0} added to group '{1}'", Context.ConnectionId, groupName);
         
-        var lastValue = priceLastValueCache.GetLastValue(request.CurrencyPair);
+        var lastValue = priceLastValueCache.GetLastValue(request.CurrencyPair, request.CounterParty);
         await Clients.Caller.SendAsync("OnNewPrice", lastValue);
         logger.LogInformation("Snapshot published to {0}: {1}", Context.ConnectionId, lastValue);
     }
@@ -51,13 +46,13 @@ public class PricingHub(
     {
         logger.LogInformation("Received unsubscription request {0} from connection {1}", request, Context.ConnectionId);
 
-        if (!currencyPairRepository.Exists(request.CurrencyPair))
+        if (!currencyPairRepository.Exists(request.CurrencyPair, request.CounterParty))
         {
             logger.LogInformation("Received an unsubscription request for an invalid currency pair '{0}', it was ignored.", request.CurrencyPair);
             return;
         }
 
-        var groupName = string.Format(PriceStreamGroupPattern, request.CurrencyPair);
+        var groupName = string.Format(PriceStreamGroupPattern, request.CurrencyPair, request.CounterParty);
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
         logger.LogInformation("Connection {0} removed from group '{1}'", Context.ConnectionId, groupName);
     }

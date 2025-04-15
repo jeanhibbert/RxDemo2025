@@ -9,18 +9,27 @@ void Main()
 {
 IAspireAppTrader aspireAppTrader = new AspireAppTrader("https://localhost:7376/pricinghub");
 
-var stream = aspireAppTrader.PricingServiceClient.GetSpotStream("EURUSD");
+var jpmStream = aspireAppTrader.PricingServiceClient.GetSpotStream("EURUSD", "JPM");
 
-aspireAppTrader.ConnectionStatusStream.Dump("Connection");
+var bamlStream = aspireAppTrader.PricingServiceClient.GetSpotStream("EURUSD", "BAML");
+
+aspireAppTrader.ConnectionStatusStream.Dump("Connection").Subscribe(conn => conn.Dump());
+
+
+var stream = jpmStream.Merge(bamlStream);
 
 stream.Select((p, i) => "price" + i + ":" + p.ToString()).Subscribe(sdf => Console.WriteLine(sdf.ToString()));
+
 //
 //	var targetPrice = 1.3625m;
-//	var execution = from price in eurusd.Where(price => price.Bid.Rate < targetPrice).Take(1)
+//var execution = from price in eurusd.Where(price => price.Bid.Rate < targetPrice).Take(1)
 //					from trade in price.Bid.ExecuteRequest(10000, "EUR")
 //					select trade.ToString();
 //
-	var subscription = stream.Subscribe(x => x.Dump());
+	var subscription = stream
+		.Where(x => x.Bid > 0)
+		.Subscribe(x => x.Dump());
+	
 	
 	Task.Delay(20000);
 	

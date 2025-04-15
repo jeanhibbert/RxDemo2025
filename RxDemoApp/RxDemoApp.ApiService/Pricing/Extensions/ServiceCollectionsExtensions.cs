@@ -19,11 +19,11 @@ public static class ServiceCollectionsExtensions
     public static IServiceCollection AddPricingServices(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddSingleton<IContextHolder, ContextHolder>();
-        serviceCollection.AddSingleton<ICurrencyPairRepository, CurrencyPairRepository>();
+        serviceCollection.AddSingleton<ICurrencyPairHolder, CurrencyPairHolder>();
         serviceCollection.AddSingleton<IPriceLastValueCache, PriceLastValueCache>();
         serviceCollection.AddSingleton<IPricePublisher, PricePublisher>();
 
-        serviceCollection.AddSingleton<IPriceFeed, PriceFeedSimulator>();
+        serviceCollection.AddSingleton<IFeedGenerator, FeedGenerator>();
         return serviceCollection;
     }
 }
